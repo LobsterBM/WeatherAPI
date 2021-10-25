@@ -3,7 +3,7 @@ require 'weather_tools'
 
 
 
-
+#rake task to automatically check for new weather data for all locations
 namespace :weather do
   desc 'Periodically updates weather conditions for all locations in database'
   task :rain_check => :environment do

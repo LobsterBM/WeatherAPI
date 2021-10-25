@@ -1,9 +1,8 @@
 require 'rake'
 class WeatherController < ApplicationController
 
-
+  #Gets weather data between two dates
   def index
-    id= params[:id ]
 
 
 
@@ -16,8 +15,6 @@ class WeatherController < ApplicationController
 
       begin
         location = Location.find_by(id: weather_id)
-        lat = location.latitude
-        lon = location.longitude
         current_weather = location.fetch_data(location.longitude,location.latitude , weather_id)
       rescue
         #Couldn't get weather from API could be a timeout error, should not affect user
@@ -55,19 +52,12 @@ class WeatherController < ApplicationController
   end
 
   def show
-    @user = params[:user]
-    locale = params[:locale]
-    start_date = params[:start_date]
-    end_date = params[:end_date]
-
-    user_line = User.find_by(name: params[@user])
-    #weather =  Weather.all
-    #    weather =  Weather.find(params[:id])
-    render json: {name: @user}
-    render json: { errors: "Customer ID and Phone Number is NULL" }
+    #probably should have used this instead of creating the list function
+    render json: { errors: "I have no memory of this place" }
 
   end
 
+  #creates
   def create
 
     slug = params[:slug]
@@ -98,7 +88,7 @@ class WeatherController < ApplicationController
     render json: { result: "slug #{slug} has been created" }
   end
 
-
+  #lists all existing slugs
   def list
     slugs = Slug.all
     result = slugs.collect{ |x|
@@ -110,14 +100,14 @@ class WeatherController < ApplicationController
     render json: {available_slugs: result}
   end
 
-
+  #Default template
   def update
     weather = Weather.find(params[:id])
     weather.update()
     render json: weather
   end
 
-
+  #destroys all data associated with a slug
   def destroy
     slug = params[:slug]
 
@@ -143,6 +133,7 @@ class WeatherController < ApplicationController
 
   end
 
+  #deletes a slug
   def hide
     slug = params[:slug]
 

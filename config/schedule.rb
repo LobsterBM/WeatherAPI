@@ -35,6 +35,6 @@ set :environment, "development"
 set :output, '/log/weather.log'
 
 puts "starting automatic update"
-every 2.minutes do
+every 3.hours do
   rake 'weather:rain_check'
 end
