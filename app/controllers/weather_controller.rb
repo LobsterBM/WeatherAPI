@@ -1,16 +1,34 @@
+require 'rake'
 class WeatherController < ApplicationController
 
 
   def index
     id= params[:id ]
+
+
+
     slug = params[:slug]
-    start_date = Time.strptime(params[:start_date], "%Y-%m-%d")
-    end_date = Time.strptime(params[:end_date], "%Y-%m-%d")
+    start_date = DateTime.strptime(params[:start_date], "%Y-%m-%d")
+    end_date = DateTime.strptime(params[:end_date], "%Y-%m-%d")
 
     if Slug.exists?(name: slug)
       weather_id = Slug.find_by(name: slug).weather_id
-      weather_data = Weather.where('weather_id = ? AND updated_at BETWEEN ? AND ?', weather_id ,start_date.noon, end_date.noon)
-      #TODO formate into json list with Date , min , max
+
+      begin
+        location = Location.find_by(id: weather_id)
+        lat = location.latitude
+        lon = location.longitude
+        current_weather = location.fetch_data(location.longitude,location.latitude , weather_id)
+      rescue
+        #Couldn't get weather from API could be a timeout error, should not affect user
+      ensure
+
+
+
+
+
+      weather_data = Weather.where('weather_id = ? AND update_time BETWEEN ? AND ?', weather_id ,start_date, end_date).order("update_time DESC")
+
 
       result = weather_data.collect{ |x|
 
@@ -21,8 +39,9 @@ class WeatherController < ApplicationController
         }
       }
 
-      render json: result
 
+      render json:  result
+      end
     else
       render json:  { error: "Slug not found" }
     end
@@ -88,7 +107,7 @@ class WeatherController < ApplicationController
         'name' =>  x.name  }
     }
 
-    render json: result
+    render json: {available_slugs: result}
   end
 
 
@@ -105,12 +124,12 @@ class WeatherController < ApplicationController
     if Slug.exists?(name: slug)
       @slug_db = Slug.find_by(name: slug)
       weather_id = @slug_db.weather_id
-      @slug_db.destroy
+      Slug.where(weather_id: weather_id).destroy_all
+
 
       Weather.where(weather_id: weather_id).destroy_all
 
-      @location = Location.find_by(id: weather_id)
-      @location.destroy
+      Location.where(id: weather_id).destroy_all
 
 
       render json: {message: "Slug has been removed"}
@@ -140,11 +159,6 @@ class WeatherController < ApplicationController
 
   end
 
-
-  private
-  def weather_params
-    params.require(:review).permit([:temperature, :update_time])
-  end
 
 
 

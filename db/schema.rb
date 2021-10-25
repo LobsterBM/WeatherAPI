@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_24_192952) do
+ActiveRecord::Schema.define(version: 2021_10_24_173713) do
 
   create_table "locations", force: :cascade do |t|
     t.float "latitude"
@@ -29,10 +29,10 @@ ActiveRecord::Schema.define(version: 2021_10_24_192952) do
   create_table "weathers", force: :cascade do |t|
     t.integer "weather_id"
     t.float "temperature"
-    t.time "update_time"
+    t.float "maxtemp"
+    t.datetime "update_time", precision: 6
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.float "maxtemp"
   end
 
 end

@@ -5,18 +5,11 @@ Rails.application.routes.draw do
   # Almost every application defines a route for the root path ("/") at the top of this file.
   # root "articles#index"
 
-
+  get '/weather', to: 'weather#index'
   post '/delete' ,to: 'weather#destroy'
   post '/remove' ,to: 'weather#hide'
   post '/create', to: 'weather#create'
   get '/list' ,to: 'weather#list'
-
- resources :weather, except: [:show] do
-    get '/weather', to: 'weather#show'
-
-
-
-  end
 
 
 end
